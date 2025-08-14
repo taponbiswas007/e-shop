@@ -1,29 +1,38 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { ref, computed } from "vue";
+import { Link, usePage } from "@inertiajs/vue3";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 // Heroicons (outline)
-import { ShoppingCartIcon, HeartIcon, Bars3Icon, XMarkIcon, ArrowLeftOnRectangleIcon } from '@heroicons/vue/24/outline';
+import {
+    ShoppingCartIcon,
+    HeartIcon,
+    Bars3Icon,
+    XMarkIcon,
+    ArrowLeftOnRectangleIcon,
+} from "@heroicons/vue/24/outline";
 
 const page = usePage();
 const user = computed(() => page.props?.auth?.user ?? null);
-const firstLetter = computed(() => (user.value && user.value.name ? user.value.name.charAt(0).toUpperCase() : ''));
+const firstLetter = computed(() =>
+    user.value && user.value.name ? user.value.name.charAt(0).toUpperCase() : ""
+);
 
 // mobile menu toggle
 const open = ref(false);
 const toggle = () => (open.value = !open.value);
 
 // sample promo text (you can replace with dynamic prop)
-const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Free shipping over ৳3000');
+const promoText = ref(
+    "Flash Offer: Up to 40% off on selected electric tools! Free shipping over ৳3000"
+);
 </script>
 
 <template>
     <div class="min-h-screen flex flex-col bg-gray-50 text-slate-800">
-
         <!-- TOP PROMO BAR -->
         <div class="bg-gradient-to-r from-indigo-600 via-yellow-500 to-amber-400 text-white">
-            <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2 gap-4">
+            <div class="mx-auto flex items-center justify-between px-4 py-2 gap-4">
                 <!-- Animated promo (modern marquee) -->
                 <div class="overflow-hidden flex-1">
                     <div class="promo-track whitespace-nowrap animate-marquee">
@@ -57,8 +66,6 @@ const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Fr
                             Logout
                             </Link>
                         </div>
-
-
                     </template>
                 </div>
             </div>
@@ -66,14 +73,18 @@ const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Fr
 
         <!-- MIDDLE HEADER -->
         <header class="bg-white shadow-sm border-b">
-            <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-4 gap-4">
+            <div class=" mx-auto flex items-center justify-between px-4 py-4 gap-4">
                 <!-- logo + brand -->
                 <div class="flex items-center gap-3">
                     <Link href="/" class="flex items-center gap-3">
-                    <ApplicationLogo class="h-12 w-12 text-indigo-600" />
+                    <ApplicationLogo class="h-12 w-25 text-indigo-600" />
                     <div class="leading-tight">
-                        <div class="text-lg font-extrabold text-slate-800">E-lectric Mart</div>
-                        <div class="text-xs text-slate-500 -mt-0.5">Powering your home & tools</div>
+                        <div class="text-lg font-extrabold text-slate-800">
+                            Alanoor Electric Store
+                        </div>
+                        <div class="text-xs text-slate-500 -mt-0.5">
+                            Powering your home & tools
+                        </div>
                     </div>
                     </Link>
                 </div>
@@ -84,7 +95,9 @@ const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Fr
                         <input aria-label="Search products" placeholder="Search for products, tools, cables, bulbs..."
                             class="w-full border border-slate-200 rounded-full py-2.5 pl-4 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-400" />
                         <button type="submit"
-                            class="absolute right-2 top-1.5 px-3 py-1.5 rounded-full bg-amber-400 text-white text-sm">Search</button>
+                            class="absolute right-2 top-1.5 px-3 py-1.5 rounded-full bg-amber-400 text-white text-sm">
+                            Search
+                        </button>
                     </form>
                 </div>
 
@@ -114,7 +127,7 @@ const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Fr
 
             <!-- bottom nav (desktop) -->
             <nav class="bg-amber-400 sm:block hidden">
-                <div class="max-w-7xl mx-auto px-4">
+                <div class=" mx-auto px-4">
                     <ul class="flex flex-wrap justify-center gap-6 text-white font-medium py-2 text-sm">
                         <li>
                             <Link href="/" class="py-1 px-2 hover:underline">Home</Link>
@@ -155,11 +168,13 @@ const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Fr
             <slot />
         </main>
 
-
         <!-- SITE FOOTER (simple) -->
         <footer class="bg-slate-800 text-slate-200">
             <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-3">
-                <div class="text-sm">© {{ new Date().getFullYear() }} E-lectric Mart. All rights reserved.</div>
+                <div class="text-sm">
+                    © {{ new Date().getFullYear() }} E-lectric Mart. All rights
+                    reserved.
+                </div>
                 <div class="flex gap-4 text-sm">
                     <Link href="/help" class="hover:underline">Help</Link>
                     <Link href="/returns" class="hover:underline">Returns</Link>
@@ -198,13 +213,14 @@ const promoText = ref('Flash Offer: Up to 40% off on selected electric tools! Fr
 }
 
 .shadow-avatar {
-    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.18), inset 0 -4px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 6px 18px rgba(99, 102, 241, 0.18),
+        inset 0 -4px 6px rgba(0, 0, 0, 0.04);
 }
 
 /* subtle fade transition */
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity .18s ease;
+    transition: opacity 0.18s ease;
 }
 
 .fade-enter-from,

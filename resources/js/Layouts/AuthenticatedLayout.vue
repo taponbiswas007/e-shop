@@ -17,7 +17,8 @@ import {
     UsersIcon,
     ChartBarIcon,
     Cog6ToothIcon,
-    ArrowLeftOnRectangleIcon
+    ArrowLeftOnRectangleIcon,
+    ServerStackIcon
 } from '@heroicons/vue/24/outline'
 
 const sidebarOpen = ref(false)
@@ -25,6 +26,7 @@ const sidebarOpen = ref(false)
 const menuItems = [
     { name: 'Dashboard', route: '/dashboard', icon: HomeIcon },
     { name: 'Orders', route: '/orders', icon: ShoppingCartIcon },
+    { name: 'Product Category', route: '/categories', icon: ServerStackIcon },
     { name: 'Products', route: '/products', icon: CubeIcon },
     { name: 'Customers', route: '/customers', icon: UsersIcon },
     { name: 'Reports', route: '/reports', icon: ChartBarIcon },

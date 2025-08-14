@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -10,12 +12,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
-
-    // Add these new routes
-    Route::get('/products', function () {
-        return Inertia::render('Products/Index');
-    })->name('products.index');
-
     Route::get('/orders', function () {
         return Inertia::render('Orders/Index');
     })->name('orders.index');
@@ -23,6 +19,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/customers', function () {
         return Inertia::render('Customers/Index');
     })->name('customers.index');
+    Route::resource('categories', CategoryController::class);
+    Route::resource('products', ProductController::class);
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {
