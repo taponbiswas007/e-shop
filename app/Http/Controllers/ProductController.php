@@ -170,32 +170,49 @@ class ProductController extends Controller
             'status' => 'boolean'
         ]);
 
-        // Calculate net price
+        // Net price calculation
+        $validated['discount'] = $validated['discount'] ?? 0;
         $validated['net_price'] = $validated['price'] - ($validated['price'] * ($validated['discount'] / 100));
 
-        // Handle file uploads and delete old files
+        // Main image remove
+        if ($request->has('remove_main_image') && $request->boolean('remove_main_image')) {
+            if ($product->main_image) {
+                Storage::disk('public')->delete($product->main_image);
+            }
+            $validated['main_image'] = null;
+        }
+
+        // Main image upload
         if ($request->hasFile('main_image')) {
-            // Delete old main image if exists
             if ($product->main_image) {
                 Storage::disk('public')->delete($product->main_image);
             }
             $validated['main_image'] = $request->file('main_image')->store('products', 'public');
         }
 
+        // Retain old image if nothing changed
+        if (!array_key_exists('main_image', $validated)) {
+            $validated['main_image'] = $product->main_image;
+        }
+
+        // Handle other images
         foreach (range(1, 5) as $i) {
             $imageField = "image_$i";
+            $removeField = "remove_$imageField";
+
             if ($request->hasFile($imageField)) {
-                // Delete old image if exists
                 if ($product->$imageField) {
                     Storage::disk('public')->delete($product->$imageField);
                 }
                 $validated[$imageField] = $request->file($imageField)->store('products', 'public');
-            } elseif ($request->has("remove_$imageField")) {
-                // Handle explicit image removal
+            } elseif ($request->has($removeField) && $request->boolean($removeField)) {
                 if ($product->$imageField) {
                     Storage::disk('public')->delete($product->$imageField);
                 }
                 $validated[$imageField] = null;
+            } else {
+                // Retain old image if not changed or removed
+                $validated[$imageField] = $product->$imageField;
             }
         }
 
@@ -205,6 +222,7 @@ class ProductController extends Controller
             ->route('products.index')
             ->with('success', 'Product updated successfully.');
     }
+
 
     public function destroy(Product $product)
     {

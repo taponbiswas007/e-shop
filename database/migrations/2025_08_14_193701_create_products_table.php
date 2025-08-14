@@ -16,9 +16,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->text('short_description');
-            $table->text('description');
-            $table->string('main_image');
+            $table->text('short_description')->nullable();
+            $table->text('description')->nullable();
+            $table->string('main_image')->nullable();
             $table->string('image_1')->nullable();
             $table->string('image_2')->nullable();
             $table->string('image_3')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('video_url')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('discount', 10, 2)->default(0);
-            $table->decimal('net_price', 10, 2);
+            $table->decimal('net_price', 10, 2)->nullable();
             $table->string('unit');
             $table->boolean('status')->default(true);
             $table->timestamps();

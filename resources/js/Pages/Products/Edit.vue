@@ -441,10 +441,24 @@ const handleImageError = (e) => {
 }
 
 const submit = () => {
-    form.put(`/products/${props.product.id}`, {
+    form.transform((data) => {
+        const transformed = { ...data }
+
+        // If no main image is selected, remove the key
+        if (!form.main_image) delete transformed.main_image
+
+        // If additional image is not selected, remove the key
+        for (let i = 1; i <= 5; i++) {
+            if (!form[`image_${i}`]) {
+                delete transformed[`image_${i}`]
+            }
+        }
+
+        return transformed
+    }).put(`/products/${props.product.id}`, {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset()
+            form.clearErrors()
         },
     })
 }
