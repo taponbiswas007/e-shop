@@ -39,15 +39,15 @@ const closeSidebar = () => {
 </script>
 
 <template>
-    <div class="flex h-screen bg-gray-100">
+    <div class="flex min-h-screen bg-gray-100">
         <!-- Overlay for small screens -->
-        <div v-if="sidebarOpen" class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden" @click="closeSidebar"></div>
+        <div v-if="sidebarOpen" class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden" @click="closeSidebar"></div>
 
         <!-- Sidebar -->
         <aside :class="[
             'bg-white shadow-lg w-64 fixed inset-y-0 left-0 transform transition-transform duration-200 ease-in-out z-30',
             sidebarOpen ? 'translate-x-0' : '-translate-x-full',
-            'md:translate-x-0'
+            'lg:translate-x-0'
         ]">
             <div class="flex items-center justify-center h-16 border-b">
                 <span class="text-xl font-bold">E-Shop Admin</span>
@@ -75,12 +75,12 @@ const closeSidebar = () => {
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col md:ml-64">
+        <div class=" lg:ml-64 w-screen">
             <!-- Top Navbar -->
             <header class="bg-white shadow h-16 flex items-center px-4 justify-between">
                 <!-- Mobile hamburger -->
                 <button @click="sidebarOpen = !sidebarOpen"
-                    class="md:hidden p-2 text-gray-700 hover:bg-gray-200 rounded">
+                    class="lg:hidden p-2 text-gray-700 hover:bg-gray-200 rounded">
                     ☰
                 </button>
                 <h1 class="text-lg font-semibold">
