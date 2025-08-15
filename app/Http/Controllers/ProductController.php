@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -150,78 +151,80 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255',
-            'short_description' => 'required|string|max:500',
-            'description' => 'required|string',
-            'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_1' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_2' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_3' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_4' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'image_5' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'video_url' => 'nullable|url',
-            'price' => 'required|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0|max:100',
-            'unit' => 'required|string|max:50',
-            'status' => 'boolean'
-        ]);
+        $product = Product::findOrFail($id);
 
-        // Net price calculation
-        $validated['discount'] = $validated['discount'] ?? 0;
-        $validated['net_price'] = $validated['price'] - ($validated['price'] * ($validated['discount'] / 100));
+        $rules = [
+            'category_id' => 'sometimes|required|exists:categories,id',
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+            'discount' => 'sometimes|nullable|numeric|min:0|max:100',
+            'net_price' => 'sometimes|nullable|numeric|min:0',
+            'short_description' => 'sometimes|nullable|string',
+            'description' => 'sometimes|nullable|string',
+            'main_image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_main_image' => 'sometimes|boolean',
+            'video_url' => 'sometimes|nullable|url',
+            'status' => 'sometimes|required|boolean',
+            'unit' => 'sometimes|nullable|string|max:20',
+        ];
 
-        // Main image remove
-        if ($request->has('remove_main_image') && $request->boolean('remove_main_image')) {
-            if ($product->main_image) {
-                Storage::disk('public')->delete($product->main_image);
-            }
-            $validated['main_image'] = null;
+        for ($i = 1; $i <= 5; $i++) {
+            $rules["image_$i"] = 'sometimes|nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
+            $rules["remove_image_$i"] = 'sometimes|boolean';
         }
 
-        // Main image upload
+        $validatedData = $request->validate($rules);
+
+        // Handle main image
         if ($request->hasFile('main_image')) {
-            if ($product->main_image) {
-                Storage::disk('public')->delete($product->main_image);
-            }
-            $validated['main_image'] = $request->file('main_image')->store('products', 'public');
+            $this->deleteImage($product->main_image);
+            $validatedData['main_image'] = $this->uploadImage($request->file('main_image'));
+        } elseif ($request->remove_main_image) {
+            $this->deleteImage($product->main_image);
+            $validatedData['main_image'] = null;
         }
 
-        // Retain old image if nothing changed
-        if (!array_key_exists('main_image', $validated)) {
-            $validated['main_image'] = $product->main_image;
-        }
-
-        // Handle other images
-        foreach (range(1, 5) as $i) {
-            $imageField = "image_$i";
-            $removeField = "remove_$imageField";
-
-            if ($request->hasFile($imageField)) {
-                if ($product->$imageField) {
-                    Storage::disk('public')->delete($product->$imageField);
-                }
-                $validated[$imageField] = $request->file($imageField)->store('products', 'public');
-            } elseif ($request->has($removeField) && $request->boolean($removeField)) {
-                if ($product->$imageField) {
-                    Storage::disk('public')->delete($product->$imageField);
-                }
-                $validated[$imageField] = null;
-            } else {
-                // Retain old image if not changed or removed
-                $validated[$imageField] = $product->$imageField;
+        // Handle additional images
+        for ($i = 1; $i <= 5; $i++) {
+            if ($request->hasFile("image_$i")) {
+                $this->deleteImage($product->{"image_$i"});
+                $validatedData["image_$i"] = $this->uploadImage($request->file("image_$i"));
+            } elseif ($request->{"remove_image_$i"}) {
+                $this->deleteImage($product->{"image_$i"});
+                $validatedData["image_$i"] = null;
             }
         }
 
-        $product->update($validated);
+        // Calculate net price if price/discount changed
+        if (isset($validatedData['price']) || isset($validatedData['discount'])) {
+            $price = $validatedData['price'] ?? $product->price;
+            $discount = $validatedData['discount'] ?? $product->discount;
+            $validatedData['net_price'] = $price - ($price * ($discount / 100));
+        }
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Product updated successfully.');
+        $product->update(array_filter($validatedData));
+
+        return back()->with('success', 'Product updated successfully!');
     }
+
+    private function uploadImage($file)
+    {
+        $filename = time() . '_' . Str::random(10) . '.' . $file->extension();
+        $file->storeAs('products', $filename, 'public');
+        return 'storage/products/' . $filename;
+    }
+
+    private function deleteImage($path)
+    {
+        if ($path && Storage::disk('public')->exists(str_replace('storage/', '', $path))) {
+            Storage::disk('public')->delete(str_replace('storage/', '', $path));
+        }
+    }
+
+
+
 
 
     public function destroy(Product $product)

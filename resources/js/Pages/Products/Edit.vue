@@ -394,12 +394,14 @@ const form = useForm({
     status: props.product.status
 })
 
+// Calculate Net Price
 const calculateNetPrice = () => {
     const price = parseFloat(form.price) || 0
     const discount = parseFloat(form.discount) || 0
     form.net_price = (price - (price * (discount / 100))).toFixed(2)
 }
 
+// Main Image Handlers
 const handleMainImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -413,10 +415,10 @@ const removeMainImage = () => {
     form.main_image = null
     form.main_image_preview = null
     form.remove_main_image = true
-    // Reset file input
-    document.querySelector('input[type="file"][ref="mainImageInput"]').value = ''
+    document.querySelector('input[ref="mainImageInput"]').value = ''
 }
 
+// Additional Images Handlers
 const handleImageChange = (e, index) => {
     const file = e.target.files[0]
     if (file) {
@@ -430,49 +432,60 @@ const removeImage = (index) => {
     form[`image_${index}`] = null
     form[`image_${index}_preview`] = null
     form[`remove_image_${index}`] = true
-    // Reset file input
     document.getElementById(`image_${index}`).value = ''
 }
 
+// Placeholder if image fails
 const handleImageError = (e) => {
     e.target.src = '/images/placeholder-product.png'
     e.target.classList.add('object-contain', 'p-2')
     e.target.classList.remove('object-cover')
 }
 
+// Submit Form
 const submit = () => {
-    form.transform((data) => {
-        const transformed = { ...data }
+    const formData = new FormData();
 
-        // If no main image is selected, remove the key
-        if (!form.main_image) delete transformed.main_image
+    // Normal fields
+    const normalFields = [
+        'category_id', 'name', 'short_description', 'description',
+        'video_url', 'price', 'discount', 'net_price', 'unit', 'status'
+    ];
+    normalFields.forEach(key => formData.append(key, form[key]));
 
-        // If additional image is not selected, remove the key
-        for (let i = 1; i <= 5; i++) {
-            if (!form[`image_${i}`]) {
-                delete transformed[`image_${i}`]
-            }
-        }
+    // Main image
+    if (form.main_image) formData.append('main_image', form.main_image);
+    formData.append('remove_main_image', form.remove_main_image);
 
-        return transformed
-    }).put(`/products/${props.product.id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.clearErrors()
-        },
+    // Additional images
+    for (let i = 1; i <= 5; i++) {
+        if (form[`image_${i}`]) formData.append(`image_${i}`, form[`image_${i}`]);
+        formData.append(`remove_image_${i}`, form[`remove_image_${i}`]);
+    }
+
+    axios.post(`/products/${props.product.id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        params: { _method: 'PUT' } // Laravel PUT override
     })
+        .then(() => {
+            form.clearErrors();
+            // success message or redirect
+        })
+        .catch(error => {
+            if (error.response?.data?.errors) {
+                form.setErrors(error.response.data.errors);
+            }
+        });
 }
 
-const deleteProduct = () => {
-    showDeleteModal.value = true
-}
 
+
+// Delete Product
+const deleteProduct = () => showDeleteModal.value = true
 const confirmDelete = () => {
     router.delete(`/products/${props.product.id}`, {
         preserveScroll: true,
-        onSuccess: () => {
-            router.visit('/products')
-        },
+        onSuccess: () => router.visit('/products')
     })
 }
 </script>
