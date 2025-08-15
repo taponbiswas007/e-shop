@@ -11,46 +11,22 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // $products = Product::with('category')
-        //     ->latest()
-        //     ->paginate(10)
-        //     ->through(function ($product) {
-        //         // Build image URLs with null checks
-        //         $imageUrls = [
-        //             'main_image_url' => $product->main_image ? asset('storage/' . $product->main_image) : null,
-        //         ];
+        $search = $request->input('search');
 
-        //         // Add additional images (1-5)
-        //         for ($i = 1; $i <= 5; $i++) {
-        //             $imageField = "image_$i";
-        //             $imageUrls["image_{$i}_url"] = $product->$imageField ? asset('storage/' . $product->$imageField) : null;
-        //         }
+        $products = Product::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->with('category') // if you have a category relationship
+            ->paginate(10);
 
-        //         return [
-        //             'id' => $product->id,
-        //             'name' => $product->name,
-        //             'category' => $product->category->name,
-        //             'short_description' => $product->short_description,
-        //             'description' => $product->description,
-        //             'price' => $product->price,
-        //             'discount' => $product->discount,
-        //             'net_price' => $product->net_price,
-        //             'unit' => $product->unit,
-        //             'status' => $product->status,
-        //             'video_url' => $product->video_url,
-        //             'created_at' => $product->created_at->format('d M Y'),
-        //             'created_at_full' => $product->created_at->toDateTimeString(),
-        //         ] + $imageUrls;
-        //     });
-
-        // return Inertia::render('Products/Index', [
-        //     'products' => $products,
-        //     'status' => session('success'),
-        // ]);
-        $products = Product::latest()->get();
-        return Inertia::render('Products/Index', compact('products'));
+        return Inertia::render('Products/Index', [
+            'products' => $products,
+            // No need to pass filters separately
+        ]);
     }
 
     public function create()
@@ -189,7 +165,19 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        // Delete all images from storage if they exist
+        $imageFields = ['main_image', 'image_1', 'image_2', 'image_3', 'image_4', 'image_5'];
+
+        foreach ($imageFields as $field) {
+            if ($product->$field) {
+                Storage::disk('public')->delete($product->$field);
+            }
+        }
+
+        // Delete product
         $product->delete();
+
+        // Redirect back with success message
         return redirect()
             ->route('products.index')
             ->with('success', 'Product deleted successfully.');

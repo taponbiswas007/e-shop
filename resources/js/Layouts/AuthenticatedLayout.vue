@@ -54,8 +54,8 @@ const closeSidebar = () => {
             <div class="flex items-center justify-center h-16 border-b">
                 <span class="text-xl font-bold">E-Shop Admin</span>
             </div>
-            <nav class="mt-4">
-                <ul>
+            <nav class="">
+                <ul class=" overflow-y-auto pb-4 h-[calc(100vh-116px)]">
                     <li v-for="item in menuItems" :key="item.name">
                         <Link :href="item.route"
                             class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors rounded">
@@ -67,7 +67,7 @@ const closeSidebar = () => {
             </nav>
 
             <!-- Logout -->
-            <div class="absolute bottom-0 w-full border-t">
+            <div class="absolute bottom-0 w-full border-t z-10 bg-white">
                 <Link href="/logout" method="post" as="button"
                     class="flex items-center px-4 py-3 w-full text-left hover:bg-gray-200">
                 <ArrowLeftOnRectangleIcon class="w-5 h-5 mr-3" />
@@ -77,7 +77,7 @@ const closeSidebar = () => {
         </aside>
 
         <!-- Main Content -->
-        <div class=" lg:ml-64 w-screen">
+        <div class=" lg:pl-64 w-screen">
             <!-- Top Navbar -->
             <header class="bg-white shadow h-16 flex items-center px-4 justify-between">
                 <!-- Mobile hamburger -->
