@@ -72,6 +72,7 @@
                                 <option value="1" class="text-green-600">Active</option>
                                 <option value="0" class="text-red-600">Inactive</option>
                             </select>
+                            <p v-if="errors.status" class="mt-1 text-sm text-red-600">{{ errors.status }}</p>
                         </div>
                     </div>
 
@@ -156,18 +157,6 @@
                 </form>
             </div>
 
-            <!-- Video Modal -->
-            <!-- <div v-if="showVideo" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg overflow-hidden w-11/12 md:w-2/3 lg:w-1/2 ">
-                    <div class="flex justify-end p-2">
-                        <button @click="showVideo = false" class="text-red-600 font-bold text-xl">&times;</button>
-                    </div>
-                    <div class="aspect-w-16 aspect-h-9">
-                        <iframe :src="youtubeEmbedUrl" frameborder="0" allowfullscreen
-                            class="w-full h-80 sm:h-96"></iframe>
-                    </div>
-                </div>
-            </div> -->
 
             <!-- Video Modal -->
             <div v-if="showVideo" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
@@ -218,6 +207,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 const props = defineProps({
     product: Object,
     categories: Array,
+    errors: Object,
 });
 
 // Form reactive object

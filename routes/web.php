@@ -1,11 +1,23 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/category/{name}', [CategoryController::class, 'show'])->name('category.show');
+
+// Cart Routes
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -24,9 +36,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/welcome', function () {
-        return Inertia::render('Welcome');
-    })->name('welcome');
+    // Route::get('/welcome', function () {
+    //     return Inertia::render('Welcome');
+    // })->name('welcome');
+    Route::get('/welcome', [HomeController::class, 'index'])->name('welcome');
 
     // এখানে শুধু সাধারণ user এর জন্য route গুলো রাখো
 });
@@ -40,14 +53,14 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
 
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 
 
 // Route::get('/dashboard', function () {

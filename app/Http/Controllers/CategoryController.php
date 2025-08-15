@@ -63,4 +63,15 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->route('categories.index')->with('success', 'Category deleted.');
     }
+    public function show($name)
+    {
+        $category = Category::where('name', $name)
+            ->with('products')
+            ->firstOrFail();
+
+        return Inertia::render('Category/Show', [
+            'category' => $category,
+            'products' => $category->products
+        ]);
+    }
 }

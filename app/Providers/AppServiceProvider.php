@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,5 +25,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        Inertia::share([
+            'cartCount' => function () {
+                if (Auth::check()) {
+                    // Logged in user
+                    return Cart::where('user_id', Auth::id())->count();
+                } else {
+                    // Guest user
+                    $sessionId = Session::getId();
+                    return Cart::where('session_id', $sessionId)->count();
+                }
+            }
+        ]);
     }
 }

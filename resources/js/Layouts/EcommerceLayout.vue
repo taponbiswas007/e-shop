@@ -17,6 +17,7 @@ const user = computed(() => page.props?.auth?.user ?? null);
 const firstLetter = computed(() =>
     user.value && user.value.name ? user.value.name.charAt(0).toUpperCase() : ""
 );
+const cartCount = computed(() => page.props?.cartCount ?? 0);
 
 // mobile menu toggle
 const open = ref(false);
@@ -109,9 +110,16 @@ const promoText = ref(
                     <span class="text-sm hidden md:inline">Favorites</span>
                     </Link>
 
-                    <Link href="/cart" class="flex items-center gap-2 text-slate-600 hover:text-amber-500">
+                    <!-- Cart Icon -->
+                    <Link href="/cart" class="relative flex items-center gap-2 text-slate-600 hover:text-amber-500">
                     <ShoppingCartIcon class="w-6 h-6" />
                     <span class="text-sm hidden md:inline">Cart</span>
+
+                    <!-- Cart count badge -->
+                    <span v-if="cartCount > 0"
+                        class="absolute -top-1 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                        {{ cartCount }}
+                    </span>
                     </Link>
 
                     <button @click="toggle" class="sm:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100">
