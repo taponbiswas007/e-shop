@@ -157,13 +157,52 @@
             </div>
 
             <!-- Video Modal -->
-            <div v-if="showVideo" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg overflow-hidden w-11/12 md:w-2/3 lg:w-1/2">
+            <!-- <div v-if="showVideo" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div class="bg-white rounded-lg overflow-hidden w-11/12 md:w-2/3 lg:w-1/2 ">
                     <div class="flex justify-end p-2">
                         <button @click="showVideo = false" class="text-red-600 font-bold text-xl">&times;</button>
                     </div>
                     <div class="aspect-w-16 aspect-h-9">
-                        <iframe :src="youtubeEmbedUrl" frameborder="0" allowfullscreen class="w-full h-full"></iframe>
+                        <iframe :src="youtubeEmbedUrl" frameborder="0" allowfullscreen
+                            class="w-full h-80 sm:h-96"></iframe>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Video Modal -->
+            <div v-if="showVideo" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+                aria-modal="true">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <!-- Background overlay -->
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                        @click="showVideo = false">
+                    </div>
+
+                    <!-- Modal content -->
+                    <div
+                        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                                        Product Video
+                                    </h3>
+                                    <div class="mt-2 aspect-w-16 aspect-h-9">
+                                        <iframe v-if="youtubeEmbedUrl" class="w-full h-64 sm:h-96"
+                                            :src="youtubeEmbedUrl" frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="button" @click="showVideo = false"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
