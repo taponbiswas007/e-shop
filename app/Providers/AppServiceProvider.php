@@ -31,11 +31,8 @@ class AppServiceProvider extends ServiceProvider
                 if (Auth::check()) {
                     // Logged in user
                     return Cart::where('user_id', Auth::id())->count();
-                } else {
-                    // Guest user
-                    $sessionId = Session::getId();
-                    return Cart::where('session_id', $sessionId)->count();
                 }
+                return 0;
             }
         ]);
     }

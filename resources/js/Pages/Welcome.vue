@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import EcommerceLayout from '@/Layouts/EcommerceLayout.vue';
 import { defineProps } from 'vue';
 import axios from 'axios';
@@ -7,10 +7,20 @@ import axios from 'axios';
 defineProps({
     categories: Array,
     canLogin: Boolean,
-    canRegister: Boolean
+    canRegister: Boolean,
 });
 
+// user info নেয়ার জন্য
+const page = usePage();
+const user = page.props.auth?.user ?? null;
+
 const addToCart = async (product) => {
+    if (!user) {
+        // যদি user login না করে থাকে তাহলে login page এ নিয়ে যাবে
+        router.visit('/login');
+        return;
+    }
+
     try {
         await axios.post('/cart/add', { product_id: product.id, quantity: 1 });
         alert(`${product.name} কার্টে যোগ করা হয়েছে!`);
@@ -20,6 +30,7 @@ const addToCart = async (product) => {
     }
 };
 </script>
+
 
 <template>
 
