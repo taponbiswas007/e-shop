@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable(); // logged-in হলে
             $table->string('session_id')->nullable(); // guest এর জন্য
             $table->unsignedBigInteger('product_id');
-            $table->integer('quantity')->default(1);
+            $table->decimal('quantity', 8, 2)->default(1);
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
